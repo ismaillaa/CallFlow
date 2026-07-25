@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Entities;
 
 public enum SecteurCampagne
 {
@@ -18,6 +20,7 @@ public enum StatutCampagne
 public class Campagne
 {
     public int Id { get; set; }
+    [MaxLength(100)]
     public string Nom { get; set; } = string.Empty;
     public SecteurCampagne Secteur { get; set; }
     public DateOnly DateDebut { get; set; }
