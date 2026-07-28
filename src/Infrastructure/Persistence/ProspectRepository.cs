@@ -70,6 +70,11 @@ public class ProspectRepository : IProspectRepository
         }
     }
 
+    public async Task AjouterRappelAsync(Rappel rappel)
+    {
+        await _db.AddAsync(rappel);
+    }
+
 
 }
 

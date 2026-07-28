@@ -9,11 +9,11 @@ public class CallFlowDbContext : DbContext
     {
     }
 
-    public DbSet<Campagne> Campagnes { get; set;}
-    public DbSet<Prospect> Prospects { get; set;}
-    public DbSet<Agent> Agents { get; set;}
-    public DbSet<Appel> Appels { get; set;}
-    public DbSet<Rappel> Rappels { get; set;}
+    public DbSet<Campagne> Campagnes { get; set; }
+    public DbSet<Prospect> Prospects { get; set; }
+    public DbSet<Agent> Agents { get; set; }
+    public DbSet<Appel> Appels { get; set; }
+    public DbSet<Rappel> Rappels { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,7 +22,12 @@ public class CallFlowDbContext : DbContext
         modelBuilder.Entity<Prospect>()
             .HasIndex(p => new { p.CampagneId, p.Telephone })
             .IsUnique();
+
+        modelBuilder.Entity<Prospect>()
+            .Property(p => p.RowVersion)
+            .HasColumnName("xmin")
+            .IsRowVersion();
     }
-    
+
 }
 

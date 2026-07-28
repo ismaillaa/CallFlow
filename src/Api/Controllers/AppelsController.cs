@@ -4,19 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-public record EnregisterAppelRequest(
-    int ProspectId, int AgnetId, ResultatAppel Resultat,
-    int DureeSecondes, string? Commentaire);
+public record EnregistrerAppelRequest(
+    int ProspectId, int AgentId, ResultatAppel Resultat,
+    int DureeSecondes, string? Commentaire, DateTime? DateRappel);
 
 [ApiController]
 [Route("api/appels")]
 public class AppelsController(EnregistrerAppelService service) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Enregistrer(EnregisterAppelRequest req)
+    public async Task<IActionResult> Enregistrer(EnregistrerAppelRequest req)
     {
-        var ok = await service.EnregisterAsync(
-            req.ProspectId, req.AgnetId, req.Resultat, req.DureeSecondes, req.Commentaire);
+        var ok = await service.EnregistrerAsync(
+            req.ProspectId, req.AgentId, req.Resultat, req.DureeSecondes, req.Commentaire, req.DateRappel);
 
         return ok ? Created("", null) : Conflict("Conflit ou prospect introuvable");
     }

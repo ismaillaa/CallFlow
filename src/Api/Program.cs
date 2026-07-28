@@ -16,6 +16,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IProspectRepository, ProspectRepository>();
 builder.Services.AddScoped<ReserverProspectService>();
 builder.Services.AddScoped < EnregistrerAppelService>();
+builder.Services.AddScoped<ImporterProspectsService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

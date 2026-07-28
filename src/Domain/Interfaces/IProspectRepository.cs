@@ -11,4 +11,5 @@ public interface IProspectRepository
     Task<bool> TryReserverAsync(Prospect prosepect);
     Task AjouterAppelAsync(Appel appel);
     Task<bool> SauvegarderAsync();
+    Task AjouterRappelAsync(Rappel rappel);
 }

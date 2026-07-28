@@ -7,7 +7,7 @@ namespace Application.UseCases;
 
 public class EnregistrerAppelService(IProspectRepository repo)
 {
-    public async Task<bool> EnregisterAsync(int prospectId, int agentId, ResultatAppel resultat, int dureeSecondes, string? commnentaire)
+    public async Task<bool> EnregistrerAsync(int prospectId, int agentId, ResultatAppel resultat, int dureeSecondes, string? commnentaire, DateTime? dateRappel)
     {
         var prospect = await repo.GetByIdAsync(prospectId);
         if (prospect is null)
@@ -39,7 +39,15 @@ public class EnregistrerAppelService(IProspectRepository repo)
                 break;
 
             case ResultatAppel.RappelDemande:
+                if (dateRappel is null || dateRappel == DateTime.UtcNow)
+                    return false;
                 prospect.Statut = StatutProspect.RappelProgramme;
+                await repo.AjouterRappelAsync(new Rappel
+                {
+                    ProspectId = prospectId,
+                    AgentId = agentId,
+                    DatePrevue = dateRappel.Value
+                });
                 break;
 
             case ResultatAppel.Injoignable:

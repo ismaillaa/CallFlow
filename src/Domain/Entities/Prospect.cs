@@ -26,8 +26,7 @@ public class Prospect
     public string? Ville { get; set; }
     public StatutProspect Statut { get; set; }
     public int NombreTentatives { get; set; } = 0;
-    [Timestamp]
-    public byte[] RowVersion { get; set; } = [];
+    public uint RowVersion { get; set; }
 
     public int CampagneId { get; set; }
     public Campagne Campagne { get; set; } = null!;
