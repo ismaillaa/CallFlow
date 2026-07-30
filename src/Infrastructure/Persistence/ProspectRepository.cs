@@ -77,6 +77,12 @@ public class ProspectRepository : IProspectRepository
 
     public async Task<bool> AgentExisteAsync(int agentId) => await _db.Agents.AnyAsync(a => a.Id == agentId);
 
+    public async Task<List<Prospect>> RecupererReservationsExpireesAsync(DateTime limite) =>
+        await _db.Prospects
+                .Where(p => p.Statut == StatutProspect.Reserve && p.DateReservation < limite)
+                .ToListAsync();
+
+
 
 }
 

@@ -1,5 +1,7 @@
 using Application.UseCases;
 using Domain.Interfaces;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Infrastructure.Auth;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,6 +25,7 @@ builder.Services.AddScoped<ReserverProspectService>();
 builder.Services.AddScoped<EnregistrerAppelService>();
 builder.Services.AddScoped<ImporterProspectsService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<ExpirationReservationsService>();
 
 
 var jwtKey = builder.Configuration["Jwt:Key"]!;
@@ -42,6 +45,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         };
     });
+
+builder.Services.AddHangfire(config =>
+config.UsePostgreSqlStorage(options =>
+options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("Default"))));
+builder.Services.AddHangfireServer();
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -50,6 +59,12 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 app.UseMiddleware<Api.Middleware.GestionErreursMiddleware>();
+app.UseHangfireDashboard("/hangfire");
+
+RecurringJob.AddOrUpdate<ExpirationReservationsService>(
+    "expiration-reservations",
+    service => service.LibererExpireesAsync(),
+    "* * * * *");
 
 app.UseAuthentication();
 app.UseAuthorization();

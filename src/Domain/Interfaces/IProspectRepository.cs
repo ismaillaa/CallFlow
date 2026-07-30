@@ -13,4 +13,5 @@ public interface IProspectRepository
     Task<bool> SauvegarderAsync();
     Task AjouterRappelAsync(Rappel rappel);
     Task<bool> AgentExisteAsync(int agentId);
+    Task<List<Prospect>> RecupererReservationsExpireesAsync(DateTime limite);
 }
