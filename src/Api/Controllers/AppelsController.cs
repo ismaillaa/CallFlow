@@ -17,10 +17,18 @@ public class AppelsController(EnregistrerAppelService service) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Enregistrer(EnregistrerAppelRequest req)
     {
-        var ok = await service.EnregistrerAsync(
+        var resultat = await service.EnregistrerAsync(
             req.ProspectId, req.AgentId, req.Resultat, req.DureeSecondes, req.Commentaire, req.DateRappel);
 
-        return ok ? Created("", null) : Conflict("Conflit ou prospect introuvable");
+        return resultat switch
+        {
+            ResultatEnregistrement.Succes => Created("", null),
+            ResultatEnregistrement.ProspectIntrouvable => NotFound("Prospect introuvable"),
+            ResultatEnregistrement.AgentIntrouvable => NotFound("Agent introuvable"),
+            ResultatEnregistrement.DonneesInvalides => BadRequest("Donnees invalides"),
+            ResultatEnregistrement.Conflit => Conflict("Conflit de concurrence"),
+            _ => StatusCode(500)
+        };
     }
 }
 

@@ -7,11 +7,18 @@ namespace Application.UseCases;
 
 public class EnregistrerAppelService(IProspectRepository repo)
 {
-    public async Task<bool> EnregistrerAsync(int prospectId, int agentId, ResultatAppel resultat, int dureeSecondes, string? commnentaire, DateTime? dateRappel)
+    public async Task<ResultatEnregistrement> EnregistrerAsync(int prospectId, int agentId, ResultatAppel resultat, int dureeSecondes, string? commentaire, DateTime? dateRappel)
     {
         var prospect = await repo.GetByIdAsync(prospectId);
         if (prospect is null)
-            return false;
+            return ResultatEnregistrement.ProspectIntrouvable;
+
+        if (!await repo.AgentExisteAsync(agentId))
+            return ResultatEnregistrement.AgentIntrouvable;
+
+        if (dureeSecondes < 0)
+            return ResultatEnregistrement.DonneesInvalides;
+
         var appel = new Appel
         {
             ProspectId = prospectId,
@@ -19,7 +26,7 @@ public class EnregistrerAppelService(IProspectRepository repo)
             DateAppel = DateTime.UtcNow,
             DureeSecondes = dureeSecondes,
             Resultat = resultat,
-            Commentaire = commnentaire
+            Commentaire = commentaire
         };
         await repo.AjouterAppelAsync(appel);
 
@@ -39,8 +46,8 @@ public class EnregistrerAppelService(IProspectRepository repo)
                 break;
 
             case ResultatAppel.RappelDemande:
-                if (dateRappel is null || dateRappel == DateTime.UtcNow)
-                    return false;
+                if (dateRappel is null || dateRappel <= DateTime.UtcNow)
+                    return ResultatEnregistrement.DonneesInvalides;
                 prospect.Statut = StatutProspect.RappelProgramme;
                 await repo.AjouterRappelAsync(new Rappel
                 {
@@ -59,7 +66,10 @@ public class EnregistrerAppelService(IProspectRepository repo)
                 throw new ArgumentException("Resultat d 'appel inconnu");
 
         }
-        return await repo.SauvegarderAsync();
+        if (!await repo.SauvegarderAsync())
+            return ResultatEnregistrement.Conflit;
+        else
+            return ResultatEnregistrement.Succes;
     }
 }
 

@@ -75,6 +75,8 @@ public class ProspectRepository : IProspectRepository
         await _db.AddAsync(rappel);
     }
 
+    public async Task<bool> AgentExisteAsync(int agentId) => await _db.Agents.AnyAsync(a => a.Id == agentId);
+
 
 }
 

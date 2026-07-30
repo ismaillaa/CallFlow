@@ -12,4 +12,5 @@ public interface IProspectRepository
     Task AjouterAppelAsync(Appel appel);
     Task<bool> SauvegarderAsync();
     Task AjouterRappelAsync(Rappel rappel);
+    Task<bool> AgentExisteAsync(int agentId);
 }

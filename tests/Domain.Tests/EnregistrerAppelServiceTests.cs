@@ -16,11 +16,12 @@ public class EnregistrerAppelServiceTests
         var repo = new Mock<IProspectRepository>();
         repo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(prospect);
         repo.Setup(r => r.SauvegarderAsync()).ReturnsAsync(true);
+        repo.Setup(r => r.AgentExisteAsync(It.IsAny<int>())).ReturnsAsync(true);
         var service = new EnregistrerAppelService(repo.Object);
 
-        var ok = await service.EnregistrerAsync(1, 1, ResultatAppel.Converti, 120, "ok", null);
+        var r = await service.EnregistrerAsync(1, 1, ResultatAppel.Converti, 120, "ok", null);
 
-        Assert.True(ok);
+        Assert.Equal(ResultatEnregistrement.Succes, r);
         Assert.Equal(StatutProspect.Converti, prospect.Statut);
         Assert.Equal(1, prospect.NombreTentatives);
     }
@@ -32,11 +33,12 @@ public class EnregistrerAppelServiceTests
         var repo = new Mock<IProspectRepository>();
         repo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(prospect);
         repo.Setup(r => r.SauvegarderAsync()).ReturnsAsync(true);
+        repo.Setup(r => r.AgentExisteAsync(It.IsAny<int>())).ReturnsAsync(true);
         var service = new EnregistrerAppelService(repo.Object);
 
-        var ok = await service.EnregistrerAsync(1, 1, ResultatAppel.Injoignable, 120, "ok", null);
+        var r = await service.EnregistrerAsync(1, 1, ResultatAppel.Injoignable, 120, "ok", null);
 
-        Assert.True(ok);
+        Assert.Equal(ResultatEnregistrement.Succes, r);
         Assert.Equal(5, prospect.NombreTentatives);
         Assert.Equal(StatutProspect.Cloture, prospect.Statut);
     }
@@ -49,11 +51,12 @@ public class EnregistrerAppelServiceTests
         var repo = new Mock<IProspectRepository>();
         repo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(prospect);
         repo.Setup(r => r.SauvegarderAsync()).ReturnsAsync(true);
+        repo.Setup(r => r.AgentExisteAsync(It.IsAny<int>())).ReturnsAsync(true);
         var service = new EnregistrerAppelService(repo.Object);
 
-        var ok = await service.EnregistrerAsync(1, 1, ResultatAppel.Injoignable, 120, "ok", null);
+        var r = await service.EnregistrerAsync(1, 1, ResultatAppel.Injoignable, 120, "ok", null);
 
-        Assert.True(ok);
+        Assert.Equal(ResultatEnregistrement.Succes, r);
         Assert.Equal(4, prospect.NombreTentatives);
         Assert.Equal(StatutProspect.Nouveau, prospect.Statut);
     }
@@ -65,11 +68,12 @@ public class EnregistrerAppelServiceTests
         var repo = new Mock<IProspectRepository>();
         repo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(prospect);
         repo.Setup(r => r.SauvegarderAsync()).ReturnsAsync(true);
+        repo.Setup(r => r.AgentExisteAsync(It.IsAny<int>())).ReturnsAsync(true);
         var service = new EnregistrerAppelService(repo.Object);
 
-        var ok = await service.EnregistrerAsync(1, 1, ResultatAppel.RappelDemande, 120, "ok", null);
+        var r = await service.EnregistrerAsync(1, 1, ResultatAppel.RappelDemande, 120, "ok", null);
 
-        Assert.False(ok);
+        Assert.NotEqual(ResultatEnregistrement.Succes, r);
         Assert.Equal(4, prospect.NombreTentatives);
         Assert.Equal(StatutProspect.Nouveau, prospect.Statut);
     }

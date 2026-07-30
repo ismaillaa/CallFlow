@@ -1,4 +1,5 @@
 ﻿using Application.UseCases;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -7,6 +8,7 @@ namespace Api.Controllers;
 [Route("api/campagnes")]
 public class CampagnesController (ImporterProspectsService service) : ControllerBase
 {
+    [Authorize(Roles ="Superviseur")]
     [HttpPost("{campagneId}/prospects/import")]
     public async Task<IActionResult> Importer (int campagneId, IFormFile fichier)
     {

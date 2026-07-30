@@ -27,6 +27,7 @@ public class AuthController(CallFlowDbContext db, TokenService tokenService) : C
         return Ok(new { token });
     }
 
+    [Authorize(Roles = "Administrateur")]
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest req)
     {

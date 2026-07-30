@@ -49,6 +49,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<Api.Middleware.GestionErreursMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
