@@ -68,6 +68,12 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<CallFlowDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseMiddleware<Api.Middleware.GestionErreursMiddleware>();
 app.UseStaticFiles();
 app.UseRouting();
@@ -85,11 +91,10 @@ RecurringJob.AddOrUpdate<ExpirationReservationsService>(
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseHttpsRedirection();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.Run();
