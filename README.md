@@ -199,10 +199,6 @@ automatiquement à chaque `push` via GitHub Actions.
 - [x] **Lot 3 — Fonctions avancées** : tâches planifiées (Hangfire), tableau de bord temps réel (SignalR)
 - [x] **Lot 4 — Industrialisation** : conteneurisation (Docker Compose), intégration continue (GitHub Actions)
 
-## Documentation
-
-- [Cahier des charges](docs/cahier-des-charges.md)
-- [Décisions techniques](docs/decisions/)
 
 ## Auteur
 
