@@ -41,8 +41,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtIssuer)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
 
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("JWT ÉCHEC : " + context.Exception.Message);
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -56,18 +64,23 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 app.UseMiddleware<Api.Middleware.GestionErreursMiddleware>();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+app.MapHub<Api.Hubs.DashboardHub>("/dashboardHub");
 app.UseHangfireDashboard("/hangfire");
 
 RecurringJob.AddOrUpdate<ExpirationReservationsService>(
     "expiration-reservations",
     service => service.LibererExpireesAsync(),
     "* * * * *");
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -78,11 +91,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
-
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
-
-
-app.MapControllers();
 app.Run();
 

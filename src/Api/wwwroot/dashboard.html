@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Dashboard CallFlow — temps réel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2rem;
+            background: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #appels {
+            list-style: none;
+            padding: 0;
+        }
+
+            #appels li {
+                background: white;
+                padding: 1rem;
+                margin: .5rem 0;
+                border-left: 4px solid #16806a;
+                border-radius: 4px;
+            }
+
+        .statut {
+            font-size: .8rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1> Appels en direct</h1>
+    <ul id="appels"></ul>
+
+    <script>
+        const connexion = new signalR.HubConnectionBuilder()
+            .withUrl("/dashboardHub")
+            .build();
+
+        connexion.on("NouvelAppel", (appel) => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>Prospect ${appel.prospectId}</strong> — Agent ${appel.agentId}
+                            <div class="statut">${appel.resultat} · ${new Date(appel.date).toLocaleTimeString()}</div>`;
+            document.getElementById("appels").prepend(li);
+        });
+
+        connexion.start()
+            .then(() => console.log("Connecté au hub"))
+            .catch(err => console.error(err));
+    </script>
+</body>
+</html>
