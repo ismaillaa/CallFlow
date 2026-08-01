@@ -1,4 +1,5 @@
 using Application.UseCases;
+using Domain.Entities;
 using Domain.Interfaces;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -72,6 +73,19 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CallFlowDbContext>();
     db.Database.Migrate();
+
+    if (!db.Agents.Any())
+    {
+        db.Agents.Add(new Agent
+        {
+            NomComplet = "Administrateur",
+            Identifiant = "admin",
+            MotDePasseHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+            Role = RoleAgent.Administrateur,
+            Actif = true
+        });
+        db.SaveChanges();
+    }
 }
 
 app.UseMiddleware<Api.Middleware.GestionErreursMiddleware>();
